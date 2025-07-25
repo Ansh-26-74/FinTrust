@@ -1,0 +1,10 @@
+# application.yml
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://anshm2674:267414362462@cluster0.v7w7k0t.mongodb.net/securevaultdb?retryWrites=true&w=majority&appName=Cluster0
+  application:
+    name: secure-vault-app
