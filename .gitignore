@@ -31,3 +31,18 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# .gitignore for Java + Spring Boot
+/target
+*.iml
+*.log
+*.class
+.idea/
+*.jar
+*.war
+*.db
+.DS_Store
+.env
+application.properties
+application.yml
+

@@ -36,7 +36,16 @@ public class UserServiceImpl implements UserService{
             }
 
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRole("ROLE_USER");
+            String role = user.getRole();
+            if(role.equalsIgnoreCase("user")) {
+                user.setRole("ROLE_USER");
+            }else if(role.equalsIgnoreCase("admin")){
+                user.setRole("ROLE_ADMIN");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Wrong role entered");
+            }
+
             User savedUser = userRepo.save(user);
 
             return ResponseEntity
