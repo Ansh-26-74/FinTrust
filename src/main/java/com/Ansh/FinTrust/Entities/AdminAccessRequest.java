@@ -21,5 +21,4 @@ public class AdminAccessRequest {
     private Date requestedAt;
     private Date respondedAt;
 
-    // Getters, Setters, Constructors
 }

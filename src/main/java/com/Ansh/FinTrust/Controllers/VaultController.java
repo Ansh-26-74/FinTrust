@@ -28,10 +28,12 @@ public class VaultController {
     private final AdminRequestService adminRequestService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file")MultipartFile file, Principal principal) {
-
+    public ResponseEntity<?> uploadFile(@RequestParam("file")MultipartFile file, Principal principal, @RequestParam("pin") String pin) {
+        if (!pin.matches("\\d{4,6}")) {
+            throw new IllegalArgumentException("PIN must be 4 to 6 digits.");
+        }
         try {
-            String fileId = fileStorageService.uploadFile(file, principal.getName());
+            String fileId = fileStorageService.uploadFile(file, pin, principal.getName());
             return ResponseEntity.ok("File uploaded with ID: " + fileId);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("upload failed" + e.getMessage());
@@ -39,9 +41,9 @@ public class VaultController {
     }
 
     @GetMapping("/download/{filename}")
-    public ResponseEntity<?> downloadFile(@PathVariable String filename, Principal principal) {
+    public ResponseEntity<?> downloadFile(@PathVariable String filename, @RequestParam String pin, Principal principal) {
         try {
-            InputStreamResource resource = fileStorageService.downloadFile(filename, principal.getName());
+            InputStreamResource resource = fileStorageService.downloadFile(filename, principal.getName(), pin);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(ContentDisposition.attachment().filename(filename).build());

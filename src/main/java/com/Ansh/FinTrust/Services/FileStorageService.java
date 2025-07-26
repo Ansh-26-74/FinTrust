@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface FileStorageService {
 
-    public String uploadFile(MultipartFile file, String username) throws IOException;
-    InputStreamResource downloadFile(String filename, String username) throws Exception;
+    String uploadFile(MultipartFile file, String pin, String username) throws IOException;
+    InputStreamResource downloadFile(String filename, String username, String pin) throws Exception;
     public List<FileInfo> listFiles(String username);
     public List<FileInfo> listAllFiles() ;
 
