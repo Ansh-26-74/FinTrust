@@ -1,18 +1,13 @@
 package com.Ansh.FinTrust.Controllers;
 
-import com.Ansh.FinTrust.DTO.AccessApprovalRequest;
-import com.Ansh.FinTrust.DTO.AdminRequest;
 import com.Ansh.FinTrust.DTO.FileInfo;
-import com.Ansh.FinTrust.Entities.AdminAccessRequest;
-import com.Ansh.FinTrust.Services.AdminRequestService;
+import com.Ansh.FinTrust.DTO.SessionPin;
 import com.Ansh.FinTrust.Services.FileStorageService;
-import com.Ansh.FinTrust.Services.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.Ansh.FinTrust.Services.SessionPinService;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,15 +20,12 @@ import java.util.List;
 public class VaultController {
 
     private final FileStorageService fileStorageService;
-    private final AdminRequestService adminRequestService;
+    private final SessionPinService sessionPinService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file")MultipartFile file, Principal principal, @RequestParam("pin") String pin) {
-        if (!pin.matches("\\d{4,6}")) {
-            throw new IllegalArgumentException("PIN must be 4 to 6 digits.");
-        }
+    public ResponseEntity<?> uploadFile(@RequestParam("file")MultipartFile file, Principal principal) {
         try {
-            String fileId = fileStorageService.uploadFile(file, pin, principal.getName());
+            String fileId = fileStorageService.uploadFile(file, principal.getName());
             return ResponseEntity.ok("File uploaded with ID: " + fileId);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("upload failed" + e.getMessage());
@@ -41,7 +33,7 @@ public class VaultController {
     }
 
     @GetMapping("/download/{filename}")
-    public ResponseEntity<?> downloadFile(@PathVariable String filename, @RequestParam String pin, Principal principal) {
+    public ResponseEntity<?> downloadFile(@PathVariable String filename, @RequestParam("pin") String pin, Principal principal) {
         try {
             InputStreamResource resource = fileStorageService.downloadFile(filename, principal.getName(), pin);
 
@@ -57,41 +49,37 @@ public class VaultController {
         }
     }
 
-    @GetMapping("/user/files")
-    public ResponseEntity<?> listUserFiles(HttpServletRequest request) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();;
-        List<FileInfo> files = fileStorageService.listFiles(username);
+    @PostMapping("/view/{filename}")
+    public ResponseEntity<InputStreamResource> viewFile(
+            @PathVariable String filename,
+            @RequestBody SessionPin sessionPin,
+            Principal principal) throws Exception {
+
+        String username = principal.getName();
+        String pin = sessionPin.getSessionPin();
+
+        GridFSFile file = fileStorageService.viewFileByFilename(filename, username, pin);
+
+        String contentType = file.getMetadata().getString("_contentType");
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
+                .body(fileStorageService.downloadFile(filename, username, pin));
+    }
+
+    @GetMapping("files")
+    public ResponseEntity<?> listMyFiles() {
+        List<FileInfo> files = fileStorageService.listMyFiles();
         return ResponseEntity.ok(files);
     }
 
-    @GetMapping("/admin/files")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> listAllFiles() {
-        List<FileInfo> files = fileStorageService.listAllFiles();
-        return ResponseEntity.ok(files);
-    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(Principal principal) {
 
-    @PatchMapping("/user/approve")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> approveAccess(@RequestBody AccessApprovalRequest approvalRequest, Principal principal) {
-        try {
-            adminRequestService.respondToAccessRequests(
-                    approvalRequest.getRequestId(),
-                    approvalRequest.getAction(),
-                    principal.getName()
-            );
-            return ResponseEntity.ok("Request " + approvalRequest.getAction().toLowerCase() + "ed successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+        sessionPinService.deletePin(principal.getName());
 
-    @GetMapping("/user/pending-requests")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> getPendingRequests(Principal principal) {
-        List<AdminRequest> requests = adminRequestService.getPendingRequestsForUser(principal.getName());
-        return ResponseEntity.ok(requests);
+        return ResponseEntity.ok("Logout successful. Session PIN invalidated.");
     }
-
 
 }

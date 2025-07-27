@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Admin {
+public class Admin implements CommonUser{
 
     @Id
     private String id;
@@ -22,4 +22,12 @@ public class Admin {
     private String role;
 
 
+    @Override
+    public String getUsername() { return this.username; }
+
+    @Override
+    public String getEmail() { return this.email; }
+
+    @Override
+    public String getRole() { return this.role; }
 }

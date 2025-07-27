@@ -5,6 +5,7 @@ import com.Ansh.FinTrust.Entities.User;
 import com.Ansh.FinTrust.Repositories.AdminRepo;
 import com.Ansh.FinTrust.Repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,8 @@ public class UserServiceImpl implements UserService{
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtServiceImpl jwtServiceImpl;
+    private final SessionPinService sessionPinService;
+    private final EmailService emailService;
 
     @Override
     public ResponseEntity<?> registerUser(User user) {
@@ -68,6 +71,10 @@ public class UserServiceImpl implements UserService{
 
             String token = jwtServiceImpl.generateUserToken(user);
 
+            String pin = sessionPinService.generateAndStorePin(user.getUsername());
+            emailService.sendEmail(user.getEmail(), "Your FinTrust Session PIN", "Your session PIN is: " + pin);
+
+
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("username", user.getUsername());
@@ -83,6 +90,4 @@ public class UserServiceImpl implements UserService{
         }
 
     }
-
-
 }

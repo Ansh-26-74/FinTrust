@@ -2,17 +2,23 @@ package com.Ansh.FinTrust.Services;
 
 import com.Ansh.FinTrust.DTO.LoginRequest;
 import com.Ansh.FinTrust.Entities.Admin;
+import com.Ansh.FinTrust.Entities.User;
 import com.Ansh.FinTrust.Repositories.AdminRepo;
+import com.Ansh.FinTrust.Repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,9 +27,12 @@ import java.util.Optional;
 public class AdminServiceImpl implements AdminService{
 
     private final AdminRepo adminRepo;
+    private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtServiceImpl jwtServiceImpl;
+    private final SessionPinService sessionPinService;
+    private final EmailService emailService;
 
     @Override
     public ResponseEntity<?> registerAdmin(Admin admin) {
@@ -67,6 +76,9 @@ public class AdminServiceImpl implements AdminService{
 
             String token = jwtServiceImpl.generateAdminToken(admin);
 
+            String pin = sessionPinService.generateAndStorePin(admin.getUsername());
+            emailService.sendEmail(admin.getEmail(), "Your FinTrust Session PIN", "Your session PIN is: " + pin);
+
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("username", admin.getUsername());
@@ -76,10 +88,21 @@ public class AdminServiceImpl implements AdminService{
                     .status(HttpStatus.OK)
                     .body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid username or password");
         }
 
+    }
+
+    public List<User> getAllUsers(String sessionPin) throws Exception{
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!sessionPinService.validatePin(username, sessionPin)) {
+            throw new Exception("Invalid or expired session PIN");
+        }
+
+        return userRepo.findAll();
     }
 }

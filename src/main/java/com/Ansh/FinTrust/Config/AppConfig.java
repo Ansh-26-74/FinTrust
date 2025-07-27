@@ -35,8 +35,11 @@ public class AppConfig{
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/register/**","/api/login/**").permitAll()
-                        .requestMatchers("/auth/**", "/test/email").permitAll()
+                        .requestMatchers(
+                                "/api/register/**",
+                                "/api/login/**",
+                                "/api/auth/**"
+                        ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasRole("USER")
                         .anyRequest().authenticated()
