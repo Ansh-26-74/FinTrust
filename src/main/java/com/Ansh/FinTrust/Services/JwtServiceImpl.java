@@ -3,8 +3,9 @@ package com.Ansh.FinTrust.Services;
 import com.Ansh.FinTrust.Entities.Admin;
 import com.Ansh.FinTrust.Entities.User;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -15,7 +16,17 @@ import java.util.List;
 public class JwtServiceImpl implements JwtService{
 
     private static final long EXPIRATION = 1000*60*60*10;   //10 Hours
-    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+    private Key key;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @PostConstruct
+    public void init() {
+        // Convert secret string to Key (at least 32 bytes required)
+        key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
 
     public String generateUserToken(User user) {
         return Jwts.builder()
