@@ -99,6 +99,7 @@ public class UserServiceImpl implements UserService{
                     .status(HttpStatus.OK)
                     .body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid username or password");
