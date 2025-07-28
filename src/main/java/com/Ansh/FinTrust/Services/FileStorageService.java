@@ -16,5 +16,6 @@ public interface FileStorageService {
     InputStreamResource downloadFile(String filename, String username, String pin) throws Exception;
     GridFSFile viewFileByFilename(String filename, String username, String sessionPin) throws Exception;
     public List<FileInfo> listMyFiles() ;
+    void deleteFile(String filename, String pin, String username) throws Exception;
 
 }

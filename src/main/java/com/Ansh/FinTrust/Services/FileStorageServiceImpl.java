@@ -122,4 +122,23 @@ public class FileStorageServiceImpl implements FileStorageService {
 
         return file;
     }
+
+    @Override
+    public void deleteFile(String filename, String pin, String username) throws Exception{
+
+        if(!sessionPinService.validatePin(username, pin)) {
+            throw new Exception("Invalid Session PIN");
+        }
+
+        GridFSFile file = gridFsTemplate.findOne(
+                Query.query(Criteria.where("filename").is(filename)
+                        .and("metadata.username").is(username))
+        );
+
+        if (file == null) {
+            throw new Exception("File not found or not owned by you");
+        }
+
+        gridFsTemplate.delete(Query.query(Criteria.where("_id").is(file.getObjectId())));
+    }
 }

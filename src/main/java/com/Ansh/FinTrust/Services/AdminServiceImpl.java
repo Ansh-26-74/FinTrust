@@ -3,9 +3,11 @@ package com.Ansh.FinTrust.Services;
 import com.Ansh.FinTrust.DTO.LoginRequest;
 import com.Ansh.FinTrust.Entities.Admin;
 import com.Ansh.FinTrust.Entities.User;
+import com.Ansh.FinTrust.Helper.PhoneNumberValidation;
 import com.Ansh.FinTrust.Repositories.AdminRepo;
 import com.Ansh.FinTrust.Repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,7 @@ public class AdminServiceImpl implements AdminService{
     private final JwtServiceImpl jwtServiceImpl;
     private final SessionPinService sessionPinService;
     private final EmailService emailService;
+    private final PhoneNumberValidation phoneNumberValidation;
 
     @Override
     public ResponseEntity<?> registerAdmin(Admin admin) {
@@ -41,28 +44,40 @@ public class AdminServiceImpl implements AdminService{
             if (existing.isPresent()) {
                 return ResponseEntity
                         .status(HttpStatus.ALREADY_REPORTED)
-                        .body("User already exists");
+                        .body("Admin already exists");
+            }
+
+            if (!phoneNumberValidation.isValidPhoneNumber(admin.getPhoneNumber()) || !phoneNumberValidation.isValidCountryCode(admin.getCountryCode())) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid phone number or country code");
             }
 
             admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-            String role = admin.getRole();
-            if(role.equalsIgnoreCase("admin")) {
+
+            String fullNumber = admin.getCountryCode() + admin.getPhoneNumber();
+            admin.setPhoneNumber(fullNumber);
+
+            if ("admin".equalsIgnoreCase(admin.getRole())) {
                 admin.setRole("ROLE_ADMIN");
-                Admin savedAdmin = adminRepo.save(admin);
+            } else {
                 return ResponseEntity
-                        .status(HttpStatus.CREATED)
-                        .body(savedAdmin);
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.BAD_REQUEST)
                         .body("Wrong role entered");
             }
+
+            Admin savedAdmin = adminRepo.save(admin);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(savedAdmin);
 
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error registering user: " + e.getMessage());
+                    .body("Error registering admin: " + e.getMessage());
         }
     }
+
 
     @Override
     public ResponseEntity<?> login(LoginRequest request) {

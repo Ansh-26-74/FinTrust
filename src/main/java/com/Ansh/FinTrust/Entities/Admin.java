@@ -18,16 +18,9 @@ public class Admin implements CommonUser{
     private String username;
     private String password;
     private String email;
+    private String countryCode;
+    private String phoneNumber;
 
     private String role;
 
-
-    @Override
-    public String getUsername() { return this.username; }
-
-    @Override
-    public String getEmail() { return this.email; }
-
-    @Override
-    public String getRole() { return this.role; }
 }

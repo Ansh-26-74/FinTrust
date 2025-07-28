@@ -2,6 +2,7 @@ package com.Ansh.FinTrust.Services;
 
 import com.Ansh.FinTrust.DTO.LoginRequest;
 import com.Ansh.FinTrust.Entities.User;
+import com.Ansh.FinTrust.Helper.PhoneNumberValidation;
 import com.Ansh.FinTrust.Repositories.AdminRepo;
 import com.Ansh.FinTrust.Repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService{
     private final JwtServiceImpl jwtServiceImpl;
     private final SessionPinService sessionPinService;
     private final EmailService emailService;
+    private final PhoneNumberValidation phoneNumberValidation;
 
     @Override
     public ResponseEntity<?> registerUser(User user) {
@@ -40,17 +42,29 @@ public class UserServiceImpl implements UserService{
                         .body("User already exists");
             }
 
+            if (!phoneNumberValidation.isValidPhoneNumber(user.getPhoneNumber()) || !phoneNumberValidation.isValidCountryCode(user.getCountryCode())) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid phone number or country code");
+            }
+
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            String role = user.getRole();
-            if(role.equalsIgnoreCase("user")) {
+
+            String fullNumber = user.getCountryCode() + user.getPhoneNumber();
+            user.setPhoneNumber(fullNumber);
+
+            if ("user".equalsIgnoreCase(user.getRole())) {
                 user.setRole("ROLE_USER");
-                User savedUser = userRepo.save(user);return ResponseEntity
-                        .status(HttpStatus.CREATED)
-                        .body(savedUser);
-            }else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
                         .body("Wrong role entered");
             }
+
+            User savedUser = userRepo.save(user);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(savedUser);
 
         } catch (Exception e) {
             return ResponseEntity
@@ -58,6 +72,7 @@ public class UserServiceImpl implements UserService{
                     .body("Error registering user: " + e.getMessage());
         }
     }
+
 
     @Override
     public ResponseEntity<?> login(LoginRequest request) {

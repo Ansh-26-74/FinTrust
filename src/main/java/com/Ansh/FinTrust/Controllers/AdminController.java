@@ -1,6 +1,7 @@
 package com.Ansh.FinTrust.Controllers;
 
 import com.Ansh.FinTrust.DTO.FileInfo;
+import com.Ansh.FinTrust.DTO.SessionPin;
 import com.Ansh.FinTrust.Entities.User;
 import com.Ansh.FinTrust.Services.AdminService;
 import com.Ansh.FinTrust.Services.FileStorageService;
@@ -21,10 +22,10 @@ public class AdminController {
     private final FileStorageService fileStorageService;
 
     @GetMapping("/all-users")
-    public ResponseEntity<?> getAllUsers(@RequestParam("pin") String pin) {
+    public ResponseEntity<?> getAllUsers(@RequestBody SessionPin sessionPin) {
 
         try{
-            List<User> allUsers = adminService.getAllUsers(pin);
+            List<User> allUsers = adminService.getAllUsers(sessionPin.getSessionPin());
             if (allUsers.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("No users found.");

@@ -33,9 +33,9 @@ public class VaultController {
     }
 
     @GetMapping("/download/{filename}")
-    public ResponseEntity<?> downloadFile(@PathVariable String filename, @RequestParam("pin") String pin, Principal principal) {
+    public ResponseEntity<?> downloadFile(@PathVariable String filename, @RequestBody SessionPin sessionPin, Principal principal) {
         try {
-            InputStreamResource resource = fileStorageService.downloadFile(filename, principal.getName(), pin);
+            InputStreamResource resource = fileStorageService.downloadFile(filename, principal.getName(), sessionPin.getSessionPin());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(ContentDisposition.attachment().filename(filename).build());
@@ -66,6 +66,21 @@ public class VaultController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
                 .contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream"))
                 .body(fileStorageService.downloadFile(filename, username, pin));
+    }
+
+    @DeleteMapping("/delete/{filename}")
+    public ResponseEntity<?> deleteFile(@PathVariable String filename, @RequestBody  SessionPin sessionPin, Principal principal) {
+
+        String pin = sessionPin.getSessionPin();
+
+        try {
+            fileStorageService.deleteFile(filename, pin, principal.getName());
+            return ResponseEntity.ok()
+                    .body("File deleted successfully !");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
+        }
     }
 
     @GetMapping("files")
