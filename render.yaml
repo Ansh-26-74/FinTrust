@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: fintrust
+    env: java
+    plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/FinTrust-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: JAVA_VERSION
+        value: 21
+
+      - key: JWT_SECRET
+        value: 2bdb53207998df0733f6523d59cab1a65d5f541ce07b6891507656294ab7ce87
+
+      - key: REDIS_URL
+        value: redis://default:Je7QRCiRbl19BRlInKy7ztCjbv8yKxXC@redis-14775.c15.us-east-1-2.ec2.redns.redis-cloud.com:14775
+
+      - key: SPRING_DATA_MONGODB_URI
+        value: mongodb+srv://anshm2674:267414362462@cluster0.v7w7k0t.mongodb.net/securevaultdb?retryWrites=true&w=majority&appName=Cluster0
+
+      - key: SPRING_MAIL_USERNAME
+        value: anshm2674@gmail.com
+
+      - key: SPRING_MAIL_PASSWORD
+        value: fsdyuiewvgadtwgu
