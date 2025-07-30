@@ -86,8 +86,8 @@ public class UserServiceImpl implements UserService{
 
             String token = jwtServiceImpl.generateUserToken(user);
 
-            String pin = sessionPinService.generateAndStorePin(user.getUsername());
-            emailService.sendEmail(user.getEmail(), "Your FinTrust Session PIN", "Your session PIN is: " + pin);
+//            String pin = sessionPinService.generateAndStorePin(user.getUsername());
+//            emailService.sendEmail(user.getEmail(), "Your FinTrust Session PIN", "Your session PIN is: " + pin);
 
 
             Map<String, Object> response = new HashMap<>();
