@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: 8080
 
 spring:
   data:
@@ -26,8 +26,3 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-
