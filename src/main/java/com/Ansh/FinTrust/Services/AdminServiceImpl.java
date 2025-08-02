@@ -19,10 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +42,12 @@ public class AdminServiceImpl implements AdminService{
                 return ResponseEntity
                         .status(HttpStatus.ALREADY_REPORTED)
                         .body("Admin already exists");
+            }
+
+            if(!admin.getKey().equals("267414362462")) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_ACCEPTABLE)
+                        .body("Wrong Admin key entered");
             }
 
             if (!phoneNumberValidation.isValidPhoneNumber(admin.getPhoneNumber()) || !phoneNumberValidation.isValidCountryCode(admin.getCountryCode())) {
@@ -119,5 +122,30 @@ public class AdminServiceImpl implements AdminService{
         }
 
         return userRepo.findAll();
+    }
+
+    public void lockUser(String username) throws Exception{
+        try {
+            if (username == null) {
+                throw new Exception("Invalid or expired lock token.");
+            }
+
+            Optional<User> optionalUser = userRepo.findByUsername(username);
+            if (optionalUser.isEmpty()) {
+                throw new Exception("User not found.");
+            }
+
+            User user = optionalUser.get();
+
+            user.setLocked(true);
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MINUTE, 15);
+            user.setLockedUntil(calendar.getTime());
+
+            userRepo.save(user);
+
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 }

@@ -12,5 +12,6 @@ public interface AdminService {
     ResponseEntity<?> registerAdmin(Admin admin);
     ResponseEntity<?> login(LoginRequest request);
     List<User> getAllUsers(String sessionPin) throws Exception;
+    void lockUser(String username) throws Exception;
 
 }

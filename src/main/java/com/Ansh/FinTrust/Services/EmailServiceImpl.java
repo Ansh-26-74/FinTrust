@@ -14,7 +14,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
-    public void sendEmail(String to, String subject, String content) throws MessagingException{
+    public void sendEmail(String to, String subject, String content) throws Exception{
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);

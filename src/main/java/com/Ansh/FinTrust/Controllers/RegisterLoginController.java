@@ -38,6 +38,7 @@ public class RegisterLoginController {
     @PostMapping("/login/user")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
         try {
+
             return userService.login(loginRequest);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

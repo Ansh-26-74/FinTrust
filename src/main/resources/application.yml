@@ -4,23 +4,22 @@ server:
 spring:
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI}
+      uri: mongodb+srv://anshm2674:267414362462@cluster0.v7w7k0t.mongodb.net/securevaultdb?retryWrites=true&w=majority&appName=Cluster0
 
-#  redis:
-#    host: ${SPRING_REDIS_HOST}
-#    port: ${SPRING_REDIS_PORT}
-#    username: ${SPRING_REDIS_USERNAME}
-#    password: ${SPRING_REDIS_PASSWORD}
+  redis:
+    host: redis-15074.c305.ap-south-1-1.ec2.redns.redis-cloud.com
+    port: 15074
+    password: N9sWmUXrJX5eQdgV6X41b5sUsMMkKZB1
 
 
   application:
-    name: secure-vault-app
+    name: FinTrust-app
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SPRING_MAIL_USERNAME}
-    password: ${SPRING_MAIL_PASSWORD}
+    username: anshm2674@gmail.com
+    password: fsdyuiewvgadtwgu
     properties:
       mail:
         smtp:
@@ -29,4 +28,4 @@ spring:
             enable: true
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: 2bdb53207998df0733f6523d59cab1a65d5f541ce07b6891507656294ab7ce87
