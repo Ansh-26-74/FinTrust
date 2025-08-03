@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Admin implements CommonUser{
+public class Admin implements CommonUser {
 
     @Id
     private String id;

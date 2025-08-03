@@ -11,7 +11,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SuspiciousActivityServiceImpl implements SuspiciousActivityService{
+public class SuspiciousActivityServiceImpl implements SuspiciousActivityService {
 
     private final SuspiciousActivityRepo suspiciousActivityRepo;
 

@@ -23,7 +23,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class AdminServiceImpl implements AdminService{
+public class AdminServiceImpl implements AdminService {
 
     private final AdminRepo adminRepo;
     private final UserRepo userRepo;
@@ -44,7 +44,7 @@ public class AdminServiceImpl implements AdminService{
                         .body("Admin already exists");
             }
 
-            if(!admin.getKey().equals("267414362462")) {
+            if (!admin.getKey().equals("267414362462")) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_ACCEPTABLE)
                         .body("Wrong Admin key entered");
@@ -114,7 +114,7 @@ public class AdminServiceImpl implements AdminService{
 
     }
 
-    public List<User> getAllUsers(String sessionPin) throws Exception{
+    public List<User> getAllUsers(String sessionPin) throws Exception {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if (!sessionPinService.validatePin(username, sessionPin)) {
@@ -124,7 +124,7 @@ public class AdminServiceImpl implements AdminService{
         return userRepo.findAll();
     }
 
-    public void lockUser(String username) throws Exception{
+    public void lockUser(String username) throws Exception {
         try {
             if (username == null) {
                 throw new Exception("Invalid or expired lock token.");

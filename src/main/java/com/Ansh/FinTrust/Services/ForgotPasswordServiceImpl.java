@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class ForgotPasswordServiceImpl implements ForgotPasswordService{
+public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Autowired
     private UserRepo userRepo;
@@ -30,6 +30,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService{
     private BCryptPasswordEncoder passwordEncoder;
 
     private final RedisTemplate<String, Object> redisTemplate;
+
     public ForgotPasswordServiceImpl(@Qualifier("redisTemplate2") RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }

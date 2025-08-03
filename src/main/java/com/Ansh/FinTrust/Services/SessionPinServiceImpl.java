@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 @Service
-public class SessionPinServiceImpl implements SessionPinService{
+public class SessionPinServiceImpl implements SessionPinService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final SuspiciousActivityService suspiciousActivityService;
@@ -26,7 +26,7 @@ public class SessionPinServiceImpl implements SessionPinService{
 
     @Override
     public String generateAndStorePin(String username) {
-        String pin = String.valueOf((int)(Math.random() * 900000) + 100000);
+        String pin = String.valueOf((int) (Math.random() * 900000) + 100000);
 
         redisTemplate.opsForValue().set("session_pin:" + username, pin, Duration.ofMinutes(30));
 

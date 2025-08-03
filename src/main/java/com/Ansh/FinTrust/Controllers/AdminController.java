@@ -30,7 +30,7 @@ public class AdminController {
     @GetMapping("/all-users")
     public ResponseEntity<?> getAllUsers(@RequestBody SessionPin sessionPin) {
 
-        try{
+        try {
             List<User> allUsers = adminService.getAllUsers(sessionPin.getSessionPin());
             if (allUsers.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -45,24 +45,24 @@ public class AdminController {
 
     }
 
-        @GetMapping("/suspicious-activity")
-        public ResponseEntity<List<SuspiciousActivity>> getAllLogs() {
-            return ResponseEntity.ok(suspiciousActivityService.getAllLogs());
-        }
+    @GetMapping("/suspicious-activity")
+    public ResponseEntity<List<SuspiciousActivity>> getAllLogs() {
+        return ResponseEntity.ok(suspiciousActivityService.getAllLogs());
+    }
 
-        @GetMapping("/suspicious-activity/{userId}")
-        public ResponseEntity<List<SuspiciousActivity>> getUserLogs(@PathVariable String userId) {
-            return ResponseEntity.ok(suspiciousActivityService.getLogsByUser(userId));
-        }
+    @GetMapping("/suspicious-activity/{userId}")
+    public ResponseEntity<List<SuspiciousActivity>> getUserLogs(@PathVariable String userId) {
+        return ResponseEntity.ok(suspiciousActivityService.getLogsByUser(userId));
+    }
 
-        @GetMapping("/lock-user/{username}")
-        public ResponseEntity<String> lockUserFromLink(@PathVariable String username) {
-            try {
-                adminService.lockUser(username);
-                return ResponseEntity.ok("✅ User " + username + " has been locked for 15 minutes.");
-            } catch (Exception e) {
-                return ResponseEntity.badRequest()
-                        .body(e.getMessage());
-            }
+    @GetMapping("/lock-user/{username}")
+    public ResponseEntity<String> lockUserFromLink(@PathVariable String username) {
+        try {
+            adminService.lockUser(username);
+            return ResponseEntity.ok("✅ User " + username + " has been locked for 15 minutes.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
         }
+    }
 }

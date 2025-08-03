@@ -13,9 +13,9 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class JwtServiceImpl implements JwtService{
+public class JwtServiceImpl implements JwtService {
 
-    private static final long EXPIRATION = 1000*60*60*10;   //10 Hours
+    private static final long EXPIRATION = 1000 * 60 * 60 * 10;   //10 Hours
 
     private Key key;
 

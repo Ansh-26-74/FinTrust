@@ -8,7 +8,9 @@ import java.util.List;
 public interface SuspiciousActivityService {
 
     void logEvent(String userId, SuspiciousEventType eventType, String details);
+
     List<SuspiciousActivity> getAllLogs();
+
     List<SuspiciousActivity> getLogsByUser(String userId);
 
 }

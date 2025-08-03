@@ -124,9 +124,9 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public void deleteFile(String filename, String pin, String username) throws Exception{
+    public void deleteFile(String filename, String pin, String username) throws Exception {
 
-        if(!sessionPinService.validatePin(username, pin)) {
+        if (!sessionPinService.validatePin(username, pin)) {
             throw new Exception("Invalid Session PIN");
         }
 

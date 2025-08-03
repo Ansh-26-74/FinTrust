@@ -23,7 +23,7 @@ public class VaultController {
     private final SessionPinService sessionPinService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file")MultipartFile file, Principal principal) {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Principal principal) {
         try {
             String fileId = fileStorageService.uploadFile(file, principal.getName());
             return ResponseEntity.ok("File uploaded with ID: " + fileId);
@@ -69,7 +69,7 @@ public class VaultController {
     }
 
     @DeleteMapping("/delete/{filename}")
-    public ResponseEntity<?> deleteFile(@PathVariable String filename, @RequestBody  SessionPin sessionPin, Principal principal) {
+    public ResponseEntity<?> deleteFile(@PathVariable String filename, @RequestBody SessionPin sessionPin, Principal principal) {
 
         String pin = sessionPin.getSessionPin();
 

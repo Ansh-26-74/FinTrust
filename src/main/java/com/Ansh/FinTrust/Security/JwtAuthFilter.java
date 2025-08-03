@@ -24,8 +24,7 @@ public class JwtAuthFilter extends GenericFilter {
     private final CustomUserDetailsService userDetailsService;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest http = (HttpServletRequest) request;
         String authHeader = http.getHeader("Authorization");
@@ -36,13 +35,10 @@ public class JwtAuthFilter extends GenericFilter {
             List<String> roles = jwtService.getAuthoritiesFromToken(jwt);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                List<GrantedAuthority> authorities = roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(http));
                 SecurityContextHolder.getContext().setAuthentication(authToken);

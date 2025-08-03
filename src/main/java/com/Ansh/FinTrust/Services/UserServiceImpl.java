@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService{
     private final Admin admin;
 
     private final RedisTemplate<String, Integer> redisTemplate;
+
     public UserServiceImpl(UserRepo userRepo, BCryptPasswordEncoder passwordEncoder,
                            AuthenticationManager authenticationManager, JwtServiceImpl jwtServiceImpl,
                            SessionPinService sessionPinService, EmailService emailService,
@@ -58,6 +59,7 @@ public class UserServiceImpl implements UserService{
         this.admin = admin;
         this.redisTemplate = redisTemplate;
     }
+
     @Override
     public ResponseEntity<?> registerUser(User user) {
         try {
@@ -120,7 +122,7 @@ public class UserServiceImpl implements UserService{
             }
         }
 
-                try {
+        try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
@@ -148,37 +150,37 @@ public class UserServiceImpl implements UserService{
                 redisTemplate.expire(key, Duration.ofMinutes(10));
             }
 
-            if(attempts > 3) {
+            if (attempts > 3) {
                 suspiciousActivityService.logEvent(request.getUsername(),
                         SuspiciousEventType.FAILED_LOGIN,
                         "Invalid login credentials after 3+ attempts");
 
 
-                    String lockLink = "https://localhost:8080/api/admin/lock-user/" + request.getUsername();
-                    String subject = "⚠️ Suspicious Login Detected";
-                    String body = String.format("""
-                        User with username %s failed to login 3 times.\n
-                        Time: %s\n
-
-                        Click to temporarily lock the user for 15 minutes:
-                        %s
-                        """,
-                            request.getUsername(),
-                            LocalDateTime.now(),
-                            lockLink
-                    );
-                    try {
-                        emailService.sendEmail(admin.getEmail(), subject, body);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
+                String lockLink = "https://localhost:8080/api/admin/lock-user/" + request.getUsername();
+                String subject = "⚠️ Suspicious Login Detected";
+                String body = String.format("""
+                                User with username %s failed to login 3 times.\n
+                                Time: %s\n
+                                
+                                Click to temporarily lock the user for 15 minutes:
+                                %s
+                                """,
+                        request.getUsername(),
+                        LocalDateTime.now(),
+                        lockLink
+                );
+                try {
+                    emailService.sendEmail(admin.getEmail(), subject, body);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
             }
 
-            }
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid username or password");
         }
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password");
+    }
 
 
 }
