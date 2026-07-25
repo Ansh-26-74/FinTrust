@@ -2,14 +2,23 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
+
   data:
     mongodb:
-      uri: mongodb+srv://anshm2674:267414362462@cluster0.v7w7k0t.mongodb.net/securevaultdb?retryWrites=true&w=majority&appName=Cluster0
+      uri: ${MONGO_URI}
 
-  redis:
-    host: redis-15074.c305.ap-south-1-1.ec2.redns.redis-cloud.com
-    port: 15074
-    password: N9sWmUXrJX5eQdgV6X41b5sUsMMkKZB1
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      username: default
+      password: ${REDIS_PASSWORD}
 
 
   application:
@@ -18,8 +27,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: anshm2674@gmail.com
-    password: fsdyuiewvgadtwgu
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -28,4 +37,4 @@ spring:
             enable: true
 
 jwt:
-  secret: 2bdb53207998df0733f6523d59cab1a65d5f541ce07b6891507656294ab7ce87
+  secret: ${JWT_SECRET}

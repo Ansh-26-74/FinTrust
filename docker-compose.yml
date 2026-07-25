@@ -1,0 +1,10 @@
+services:
+  fintrust-app:
+    image: fintrust-app:latest
+    build: .
+    container_name: fintrust-app
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

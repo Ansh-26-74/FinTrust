@@ -2,13 +2,10 @@ package com.Ansh.FinTrust.Services;
 
 import com.Ansh.FinTrust.DTO.LoginRequest;
 import com.Ansh.FinTrust.DTO.SuspiciousEventType;
-import com.Ansh.FinTrust.Entities.Admin;
 import com.Ansh.FinTrust.Entities.User;
 import com.Ansh.FinTrust.Helper.PhoneNumberValidation;
 import com.Ansh.FinTrust.Repositories.AdminRepo;
 import com.Ansh.FinTrust.Repositories.UserRepo;
-import jakarta.mail.MessagingException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -19,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -38,7 +34,7 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
     private final PhoneNumberValidation phoneNumberValidation;
     private final SuspiciousActivityService suspiciousActivityService;
-    private final Admin admin;
+    private final AdminRepo adminRepo;
 
     private final RedisTemplate<String, Integer> redisTemplate;
 
@@ -46,7 +42,7 @@ public class UserServiceImpl implements UserService {
                            AuthenticationManager authenticationManager, JwtServiceImpl jwtServiceImpl,
                            SessionPinService sessionPinService, EmailService emailService,
                            PhoneNumberValidation phoneNumberValidation,
-                           SuspiciousActivityService suspiciousActivityService, Admin admin,
+                           SuspiciousActivityService suspiciousActivityService, AdminRepo adminRepo,
                            @Qualifier("redisTemplate3") RedisTemplate<String, Integer> redisTemplate) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
@@ -56,7 +52,7 @@ public class UserServiceImpl implements UserService {
         this.emailService = emailService;
         this.phoneNumberValidation = phoneNumberValidation;
         this.suspiciousActivityService = suspiciousActivityService;
-        this.admin = admin;
+        this.adminRepo = adminRepo;
         this.redisTemplate = redisTemplate;
     }
 
@@ -169,11 +165,13 @@ public class UserServiceImpl implements UserService {
                         LocalDateTime.now(),
                         lockLink
                 );
-                try {
-                    emailService.sendEmail(admin.getEmail(), subject, body);
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
+                adminRepo.findByRole("ROLE_ADMIN").ifPresent(admin -> {
+                    try {
+                        emailService.sendEmail(admin.getEmail(), subject, body);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                });
             }
 
         }

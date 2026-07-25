@@ -12,7 +12,7 @@
 	<artifactId>FinTrust</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>FinTrust</name>
-	<description>ecure Digital Vault for Documents with Audit Logs</description>
+	<description>secure Digital Vault for Documents with Audit Logs</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -28,6 +28,8 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>

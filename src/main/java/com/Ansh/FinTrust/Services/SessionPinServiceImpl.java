@@ -29,7 +29,6 @@ public class SessionPinServiceImpl implements SessionPinService {
         String pin = String.valueOf((int) (Math.random() * 900000) + 100000);
 
         redisTemplate.opsForValue().set("session_pin:" + username, pin, Duration.ofMinutes(30));
-
         return pin;
     }
 
