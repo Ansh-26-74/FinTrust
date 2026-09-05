@@ -17,14 +17,24 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName("redis-14671.crce281.ap-south-1-3.ec2.cloud.redislabs.com");
-        config.setPort(14671);
-        config.setPassword(RedisPassword.of("QbwQpsLFZymXOVUIuN45ciKHXbYqOHf3"));
+    public LettuceConnectionFactory redisConnectionFactory(
+            RedisProperties redisProperties) {
 
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .build();
+        RedisStandaloneConfiguration config =
+                new RedisStandaloneConfiguration();
+
+        config.setHostName(redisProperties.getHost());
+        config.setPort(redisProperties.getPort());
+
+        if (redisProperties.getPassword() != null) {
+            config.setPassword(
+                    RedisPassword.of(redisProperties.getPassword())
+            );
+        }
+
+        LettuceClientConfiguration clientConfig =
+                LettuceClientConfiguration.builder()
+                        .build();
 
         return new LettuceConnectionFactory(config, clientConfig);
     }

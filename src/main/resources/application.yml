@@ -9,17 +9,16 @@ spring:
     mongodb:
       uri: ${MONGO_URI}
 
-  servlet:
-    multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
-
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       username: default
       password: ${REDIS_PASSWORD}
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   application:
     name: FinTrust-app
