@@ -1,4 +1,4 @@
-# 🔐 FinTrust — Secure Vault & Fraud Detection System
+# 🔐 FinTrust — Secure Fintech Vault & Suspicious Activity Detection System System
 
 FinTrust is a **secure Spring Boot backend** designed to simulate security workflows used in fintech applications. The system combines **JWT authentication, role-based authorization, Redis-based session security, suspicious-login detection, password recovery, and secure file storage using MongoDB GridFS**.
 
