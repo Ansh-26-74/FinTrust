@@ -34,3 +34,15 @@ jobs:
 
       - name: Push Docker image
         run: docker push anshm2674/fintrust-app:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/FinTrust
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
