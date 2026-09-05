@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
                         "Invalid login credentials after 3+ attempts");
 
 
-                String lockLink = "https://16.16.79.125:8080/api/admin/lock-user/" + request.getUsername();
+                String lockLink = "http://16.16.79.125:8080/api/admin/lock-user/" + request.getUsername();
                 String subject = "⚠️ Suspicious Login Detected";
                 String body = String.format("""
                                 User with username %s failed to login 3 times.\n
